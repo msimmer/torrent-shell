@@ -1,10 +1,5 @@
 #! /bin/bash
 
-# @desc Add a/a list of torrents to a client Run against a single file or list
-#       of files iteratively.
-# @return nil
-# @requires transmission-remote
-
 source utilities.sh
 
 TORRENTS=()
@@ -29,8 +24,8 @@ done
 
 for port in "${PORTS[@]}"
 do
-  if ! transmission-remote "$CLIENT_IP":"$port" -a "$TORRENTS_STRING" > /dev/null 2>&1; then
-    response_error "Could not add torrents"
+  if ! transmission-remote "$CLIENT_IP":"$port" -r "$TORRENTS_STRING" > /dev/null 2>&1; then
+    response_error "Could not remove torrents"
   fi
 done
 

@@ -51,7 +51,9 @@ do
   echo "$SETTINGS" > "$CLIENT_ROOT/$client_name/settings.json"
 
   # Start the client
-  sudo service "transmission-daemon@$client_name" start
+  if ! sudo service "transmission-daemon@$client_name" start; then
+    response_error "Could not start client $client_name"
+  fi
 done
 
 # Add ports to UFW and reload the firewall
