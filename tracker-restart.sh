@@ -1,19 +1,15 @@
 #! /bin/bash
 
-source './utilities.sh'
+source utilities.sh
 
-sudo service opentracker stop
-
-if [ $? -ne 0 ]
+if ! sudo service opentracker stop
 then
-  error "Could not stop tracker"
+  response_error "Could not stop tracker"
 fi
 
-sudo service opentracker start
-
-if [ $? -ne 0 ]
+if ! sudo service opentracker start
 then
-  error "Could not start tracker"
+  response_error "Could not start tracker"
 else
-  echo $(jq -n '{ code: 0, data: {} }')
+  response_ok
 fi

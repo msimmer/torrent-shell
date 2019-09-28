@@ -1,12 +1,13 @@
 #! /bin/bash
 
-source './utilities.sh'
+# Add multiple torrent clients
+
+source utilities.sh
 
 RPC_PORTS=()
 TRANSMISSION_PORTS=()
 TRANSMISSION_PORTS_PROTOCOL=()
-SETTINGS="$(< $CLIENT_SETTINGS_PATH)"
-# RPC_PASSWORD=''
+SETTINGS=$(< "$CLIENT_SETTINGS_PATH")
 
 while getopts ":p:P:" opt; do
   case $opt in
@@ -16,22 +17,48 @@ while getopts ":p:P:" opt; do
       TRANSMISSION_PORTS+=("$OPTARG")
       TRANSMISSION_PORTS_PROTOCOL+=("$OPTARG/tcp")
     ;;
-    \?) error "Invalid option -$OPTARG"
+    \?) response_error "Invalid option -$OPTARG"
     ;;
   esac
 done
 
+# Requires same number of arguments to be passed into both RPC_PORTS (-p) and
+# TRANSMISSION_PORTS (-P)
+if [[ ${#RPC_PORTS[@]} -ne ${#TRANSMISSION_PORTS[@]} || ${#RPC_PORTS[@]} -gt 1 || ${#TRANSMISSION_PORTS[@]} -lt 1 ]]; then
+  response_error "Incorrect number of arguments for rpc-ports and transmission-ports"
+fi
 
-# Add ports to UFW
-# sudo ufw allow $(join , "${RPC_PORTS[@]}"),$(join , "${TRANSMISSION_PORTS_PROTOCOL[@]}")
-# sudo ufw reload
+# Create the settings files and add them to each client's working dir.
+# Instantiate the clients using systemd. Pass in the newly created settings.json
+# file for each to create the necessary folder structure based on each client's
+# home directory
+for i in "${!RPC_PORTS[@]}"
+do
+  rpc_port="${RPC_PORTS[i]}"
+  transmission_port="${TRANSMISSION_PORTS[i]}"
+  client_name="transmission-$rpc_port"
 
-# x=$(join , "${RPC_PORTS[@]}")
-# y=$(join , "${TRANSMISSION_PORTS[@]}")
-# z=$(join , "${TRANSMISSION_PORTS_PROTOCOL[@]}")
-# echo $x
-# echo $y
-# echo $z
+  # Modify settings for each client
+  SETTINGS=$(perl -X -pi -e "s/(\"peer-port\":) [^,]+/\1 $transmission_port/" <<< "$SETTINGS")
+  SETTINGS=$(perl -X -pi -e "s/(\"rpc-port\":) [^,]+/\1 $rpc_port/" <<< "$SETTINGS")
+  SETTINGS=$(perl -X -pi -e "s/(\"rpc-authentication-required\":) [^,]+/\1 false/" <<< "$SETTINGS")
+  SETTINGS=$(perl -X -pi -e "s/(\"rpc-password\":) [^,]+/\1 \"$(date +%s | sha256sum | base64 | head -c 32)\"/" <<< "$SETTINGS")
+  SETTINGS=$(perl -X -pi -e "s/(\"rpc-url\":) [^,]+/\1 \"\/$client_name\/\"/" <<< "$SETTINGS")
+  SETTINGS=$(perl -X -pi -e "s/(\"rpc-username\":) [^,]+/\1 \"$client_name\"/" <<< "$SETTINGS")
 
-# echo "${RPC_PORTS[*]}"
-# echo "${TRANSMISSION_PORTS[*]}"
+  # Write the settings files
+  mkdir -p "$CLIENT_ROOT/$client_name"
+  echo "$SETTINGS" > "$CLIENT_ROOT/$client_name/settings.json"
+
+  # Start the client
+  sudo service "transmission-daemon@$client_name" start
+done
+
+# Add ports to UFW and reload the firewall
+RPC_PORTS_STRING=$(join , "${RPC_PORTS[@]}")
+TRANSMISSION_PORTS_PROTOCOL_STRING=$(join , "${TRANSMISSION_PORTS_PROTOCOL[@]}")
+
+sudo ufw allow "$RPC_PORTS_STRING","$TRANSMISSION_PORTS_PROTOCOL_STRING"
+sudo ufw reload
+
+response_ok

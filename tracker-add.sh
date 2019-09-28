@@ -1,6 +1,6 @@
 #! /bin/bash
 
-source './utilities.sh'
+source utilities.sh
 
 HASH_ARRAY=()
 OUTPUT_ARRAY=()
@@ -11,31 +11,33 @@ while getopts ":h:" opt; do
   case $opt in
     h) HASH_ARRAY+=("$OPTARG")
     ;;
-    \?) error "Invalid option -$OPTARG"
+    \?) response_error "Invalid option -$OPTARG"
     ;;
   esac
 done
 
 # Build arrays for the whitelist and the new hashes so that we can check for
 # duplicates
-while read line
+while read -r line
 do
   OUTPUT_ARRAY+=("$line")
-done < $TRACKER_WHITELIST
+done < "$TRACKER_WHITELIST"
 
 # Only append unique items to the whitelist
 for hash in "${HASH_ARRAY[@]}"
 do
-  if [[ ! " ${OUTPUT_ARRAY[@]} " =~ " ${hash} " ]]; then
+  # shellcheck disable=SC2199,SC2076
+  if [[ ! " ${OUTPUT_ARRAY[@]} " =~ " $hash " ]]; then
     OUTPUT_ARRAY+=("$hash")
     MODIFIED=$((MODIFIED + 1))
   fi
 done
 
 (IFS=$'\n'
-echo "${OUTPUT_ARRAY[*]}" > $TRACKER_WHITELIST)
+echo "${OUTPUT_ARRAY[*]}" > "$TRACKER_WHITELIST")
 
-echo $(jq -n --arg modified "$MODIFIED" '{
+# shellcheck disable=SC2005
+echo "$(jq -n --arg modified "$MODIFIED" '{
   code: 0,
   data: { modified: $modified }
-}')
+}')"

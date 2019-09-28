@@ -5,7 +5,7 @@
 # @return nil
 # @requires transmission-remote
 
-source './utilities.sh'
+source utilities.sh
 
 TORRENTS_ARRAY=()
 TORRENTS_STRING=''
@@ -17,8 +17,7 @@ while getopts ":t:p:" opt; do
     ;;
     p) PORT="$OPTARG"
     ;;
-    \?) error "Invalid option -$OPTARG"
-    # \?) echo "Invalid option -$OPTARG" >&2
+    \?) response_error "Invalid option -$OPTARG"
     ;;
   esac
 done
@@ -28,12 +27,9 @@ do
   TORRENTS_STRING+="$torrent "
 done
 
-eval "transmission-remote ${CLIENT_IP}:${PORT} -a $TORRENTS_STRING > /dev/null 2>&1" # TODO: auth?
-# # eval "transmission-remote ${CLIENT_IP}:${PORT} -n user:pass -a $TORRENTS_STRING > /dev/null 2>&1"
-
-if [ $? -eq 0 ]
+if transmission-remote "$CLIENT_IP":"$PORT" -a "$TORRENTS_STRING" > /dev/null 2>&1
 then
-  echo $(jq -n '{ code: 0, data: {} }')
+  response_ok
 else
-  error "Could not add torrent"
+  response_error "Could not add torrent"
 fi

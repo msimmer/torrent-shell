@@ -16,12 +16,11 @@ TRACKER_STATS_URL="$TRACKER_IP:$TRACKER_PORT/$TRACKER_STATS_PATH"
 #
 ######## End of Configuration
 
-PEERS=`curl -s $TRACKER_STATS_URL | awk 'NR == 1'`
-SEEDERS=`curl -s $TRACKER_STATS_URL | awk 'NR == 2'`
-TORRENTS=`curl -s $TRACKER_STATS_URL | awk 'NR == 3' | awk '{print $3}'`
+PEERS=$(curl -s "$TRACKER_STATS_URL" | awk 'NR == 1')
+SEEDERS=$(curl -s "$TRACKER_STATS_URL" | awk 'NR == 2')
+TORRENTS=$(curl -s "$TRACKER_STATS_URL" | awk 'NR == 3' | awk '{print $3}')
 
-let LEECHERS=$PEERS-$SEEDERS
-
+LEECHERS=$((PEERS - SEEDERS))
 
 case $1 in
   config)
@@ -46,17 +45,18 @@ case $1 in
   exit 0;;
 esac
 
-echo $(jq -n \
-          --arg peers "$PEERS" \
-          --arg seeders "$SEEDERS" \
-          --arg leechers "$LEECHERS" \
-          --arg torrents "$TORRENTS" \
-          '{
-            code: 0,
-            data: {
-              peers: $peers,
-              seeders: $seeders,
-              leechers: $leechers,
-              torrents: $torrents
-            }
-          }')
+# shellcheck disable=SC2005
+echo "$(jq -n \
+        --arg peers "$PEERS" \
+        --arg seeders "$SEEDERS" \
+        --arg leechers "$LEECHERS" \
+        --arg torrents "$TORRENTS" \
+        '{
+          code: 0,
+          data: {
+            peers: $peers,
+            seeders: $seeders,
+            leechers: $leechers,
+            torrents: $torrents
+          }
+        }')"
