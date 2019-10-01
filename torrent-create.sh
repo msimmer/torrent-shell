@@ -9,25 +9,19 @@ source utilities.sh
 
 OUTPUT_FILENAME="$1.torrent"
 
-# Create the torrents and get the hash
-CREATE="transmission-create -o $APP_DIR/torrents/$OUTPUT_FILENAME -t $TRACKER_URL_UDP $TMP_DIR/$1 > /dev/null 2>&1"
 
-# Add tier 2 tracker URL
-EDIT="transmission-edit -a $TRACKER_URL_TCP $TMP_DIR/$1 > /dev/null 2>&1"
-
-# Command to get the hash once the torrent has been added
-SHOW_TORRENT_HASH="transmission-show $APP_DIR/torrents/$OUTPUT_FILENAME | grep -oP --color=none \"(?<=Hash: )\w+\""
-
-if eval "$CREATE"
+if sudo transmission-create -o "$APP_DIR/torrents/$OUTPUT_FILENAME" -t "$TRACKER_URL_UDP" "$TMP_DIR/$1" > /dev/null 2>&1
+  # Create the torrents and get the hash
   then
-  if eval "$EDIT"
+  # Add tier 2 tracker URL
+  if sudo transmission-edit -a "$TRACKER_URL_TCP" "$APP_DIR/torrents/$OUTPUT_FILENAME" > /dev/null 2>&1
   then
     # Move source file to app dir -- TODO: since all the clients are happy to
     # share a single dir, that dir should be made the sources dir
-    mv "$TMP_DIR/$1" "$APP_DIR/sources/$1"
+    sudo mv "$TMP_DIR/$1" "$APP_DIR/sources/$1"
 
     # Return torrent hash for the API
-    TORRENT_HASH=$("$SHOW_TORRENT_HASH")
+    TORRENT_HASH=$(sudo transmission-show "$APP_DIR/torrents/$OUTPUT_FILENAME" | grep -oP --color=none "(?<=Hash: )\w+")
 
     # shellcheck disable=SC2005
     echo "$(jq -n \

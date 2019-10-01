@@ -50,6 +50,9 @@ do
   sudo mkdir -p "$CLIENT_ROOT/$client_name"
   echo "$SETTINGS" | sudo tee "$CLIENT_ROOT/$client_name/settings.json" > /dev/null
 
+  # Set permissions
+  sudo chown -R "$TRANSMISSION_USER":"$TRANSMISSION_GROUP" "$CLIENT_ROOT/$client_name"
+
   # Start the client
   if ! sudo service "transmission-daemon@$client_name" start; then
     response_error "Could not start client $client_name"

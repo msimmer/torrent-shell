@@ -29,7 +29,7 @@ done
 
 for port in "${PORTS[@]}"
 do
-  if ! transmission-remote "$CLIENT_IP":"$port" -a "$TORRENTS_STRING" > /dev/null 2>&1; then
+  if ! transmission-remote localhost:"$port" -a "$TORRENTS_STRING" > /dev/null 2>&1; then
     response_error "Could not add torrents"
   fi
 done
