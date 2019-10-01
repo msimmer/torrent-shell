@@ -24,7 +24,7 @@ done
 
 for torrent in "${TORRENTS[@]}"
 do
-  TORRENTS_STRING+="$torrent "
+  TORRENTS_STRING+="$APP_DIR/torrents/$torrent "
 done
 
 for port in "${PORTS[@]}"

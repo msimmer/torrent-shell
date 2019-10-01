@@ -36,11 +36,12 @@ do
   fi
 done
 
-# Delete ports from UFW and reload the firewall
-RPC_PORTS_STRING=$(join , "${RPC_PORTS[@]}")
-TRANSMISSION_PORTS_STRING=$(join , "${TRANSMISSION_PORTS[@]}")
+# Close ports from UFW and reload the firewall
+for i in "${!RPC_PORTS[@]}"
+do
+  sudo ufw deny "${RPC_PORTS[i]}","${TRANSMISSION_PORTS[i]}"
+done
 
-sudo ufw delete "$RPC_PORTS_STRING","$TRANSMISSION_PORTS_STRING"
 sudo ufw reload
 
 response_ok

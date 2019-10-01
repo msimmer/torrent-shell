@@ -57,10 +57,11 @@ do
 done
 
 # Add ports to UFW and reload the firewall
-RPC_PORTS_STRING=$(join , "${RPC_PORTS[@]}")
-TRANSMISSION_PORTS_PROTOCOL_STRING=$(join , "${TRANSMISSION_PORTS_PROTOCOL[@]}")
+for i in "${!RPC_PORTS[@]}"
+do
+  sudo ufw allow "${RPC_PORTS[i]}","${TRANSMISSION_PORTS_PROTOCOL[i]}"
+done
 
-sudo ufw allow "$RPC_PORTS_STRING","$TRANSMISSION_PORTS_PROTOCOL_STRING"
 sudo ufw reload
 
 response_ok
