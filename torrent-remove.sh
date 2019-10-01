@@ -24,7 +24,7 @@ done
 
 for port in "${PORTS[@]}"
 do
-  if ! transmission-remote "$CLIENT_IP":"$port" -r "$TORRENTS_STRING" > /dev/null 2>&1; then
+  if ! transmission-remote localhost:"$port" -r "$TORRENTS_STRING" > /dev/null 2>&1; then
     response_error "Could not remove torrents"
   fi
 done
