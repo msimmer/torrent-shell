@@ -47,8 +47,8 @@ do
   SETTINGS=$(perl -X -pi -e "s/(\"rpc-username\":) [^,]+/\1 \"$client_name\"/" <<< "$SETTINGS")
 
   # Write the settings files
-  mkdir -p "$CLIENT_ROOT/$client_name"
-  echo "$SETTINGS" > "$CLIENT_ROOT/$client_name/settings.json"
+  sudo mkdir -p "$CLIENT_ROOT/$client_name"
+  echo "$SETTINGS" | sudo tee "$CLIENT_ROOT/$client_name/settings.json" > /dev/null
 
   # Start the client
   if ! sudo service "transmission-daemon@$client_name" start; then

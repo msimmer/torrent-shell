@@ -31,7 +31,7 @@ do
   fi
 
   # Remove the client's home directory
-  if ! rm -rf "${CLIENT_ROOT:?}/$client_name"; then
+  if ! sudo rm -rf "${CLIENT_ROOT:?}/$client_name"; then
     response_error "Could not remove client directory ${CLIENT_ROOT}/$client_name"
   fi
 done
