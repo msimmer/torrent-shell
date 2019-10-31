@@ -3,12 +3,12 @@
 # shellcheck source=utilities.sh
 source "$(cd "$(dirname "$0")" || exit; pwd -P)/utilities.sh"
 
-TORRENTS=()
+TORRENT_HASHES=()
 PORTS=()
 
 while getopts ":t:p:" opt; do
   case $opt in
-    t) TORRENTS+=("$OPTARG")
+    t) TORRENT_HASHES+=("$OPTARG")
     ;;
     p) PORTS+=("$OPTARG")
     ;;
@@ -17,11 +17,11 @@ while getopts ":t:p:" opt; do
   esac
 done
 
-for torrent in "${TORRENTS[@]}"
+for hash in "${TORRENT_HASHES[@]}"
 do
   for port in "${PORTS[@]}"
   do
-    if ! transmission-remote localhost:"$port" -t "$torrent" -r > /dev/null 2>&1; then
+    if ! transmission-remote localhost:"$port" -t "$hash" -r > /dev/null 2>&1; then
       response_error "Could not remove torrents"
     fi
   done
