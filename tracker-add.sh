@@ -1,7 +1,7 @@
 #! /bin/bash
 
 # shellcheck source=utilities.sh
-source "$(cd "$(dirname "$0")" || exit; pwd -P)/utilitie.sh"
+source "$(cd "$(dirname "$0")" || exit; pwd -P)/utilities.sh"
 
 HASH_ARRAY=()
 OUTPUT_ARRAY=()

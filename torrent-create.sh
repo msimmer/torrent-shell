@@ -6,7 +6,7 @@
 # @requires transmission-create transmission-show
 
 # shellcheck source=utilities.sh
-source "$(cd "$(dirname "$0")" || exit; pwd -P)/utilitie.sh"
+source "$(cd "$(dirname "$0")" || exit; pwd -P)/utilities.sh"
 
 OUTPUT_FILENAME="$1.torrent"
 
