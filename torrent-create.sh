@@ -20,6 +20,8 @@ if sudo transmission-create -o "$APP_DIR/torrents/$OUTPUT_FILENAME" -t "$TRACKER
     # Move source file to app dir -- TODO: since all the clients are happy to
     # share a single dir, that dir should be made the sources dir
     sudo mv "$TMP_DIR/$1" "$APP_DIR/sources/$1"
+    sudo chown "$TRANSMISSION_USER":"$TRANSMISSION_GROUP" "$APP_DIR/torrents/$OUTPUT_FILENAME"
+    sudo chown "$TRANSMISSION_USER":"$TRANSMISSION_GROUP" "$APP_DIR/sources/$1"
 
     # Return torrent hash for the API
     TORRENT_HASH=$(sudo transmission-show "$APP_DIR/torrents/$OUTPUT_FILENAME" | grep -oP --color=none "(?<=Hash: )\w+")

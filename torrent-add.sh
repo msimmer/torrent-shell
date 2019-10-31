@@ -26,7 +26,7 @@ for torrent in "${TORRENTS[@]}"
 do
   for port in "${PORTS[@]}"
   do
-    if ! transmission-remote localhost:"$port" -t "$APP_DIR/torrents/$torrent" -a > /dev/null 2>&1; then
+    if ! transmission-remote localhost:"$port" -a "$APP_DIR/torrents/$torrent" > /dev/null 2>&1; then
       response_error "Could not add torrents"
     fi
   done
