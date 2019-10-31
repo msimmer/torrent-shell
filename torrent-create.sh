@@ -5,7 +5,8 @@
 # @return Torrent hash
 # @requires transmission-create transmission-show
 
-source utilities.sh
+# shellcheck source=utilities.sh
+source "$(cd "$(dirname "$0")" || exit; pwd -P)/utilitie.sh"
 
 OUTPUT_FILENAME="$1.torrent"
 

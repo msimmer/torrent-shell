@@ -2,7 +2,8 @@
 
 # Add multiple torrent clients
 
-source utilities.sh
+# shellcheck source=utilities.sh
+source "$(cd "$(dirname "$0")" || exit; pwd -P)/utilitie.sh"
 
 RPC_PORTS=()
 TRANSMISSION_PORTS=()
