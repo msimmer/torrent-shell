@@ -1,11 +1,10 @@
 #! /bin/bash
 
 # shellcheck source=utilities.sh
-source "$(cd "$(dirname "$0")" || exit; pwd -P)/utilities.sh"
+source "$(cd "$(dirname "$0")" || exit; pwd -P)/utilitie.sh"
 
 TORRENTS=()
 PORTS=()
-TORRENTS_STRING=''
 
 while getopts ":t:p:" opt; do
   case $opt in
@@ -20,14 +19,13 @@ done
 
 for torrent in "${TORRENTS[@]}"
 do
-  TORRENTS_STRING+="$torrent "
+  for port in "${PORTS[@]}"
+  do
+    if ! transmission-remote localhost:"$port" -t "$torrent" -r > /dev/null 2>&1; then
+      response_error "Could not remove torrents"
+    fi
+  done
 done
 
-for port in "${PORTS[@]}"
-do
-  if ! transmission-remote localhost:"$port" -r "$TORRENTS_STRING" > /dev/null 2>&1; then
-    response_error "Could not remove torrents"
-  fi
-done
 
 response_ok

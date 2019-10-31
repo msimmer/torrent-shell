@@ -10,7 +10,6 @@ source "$(cd "$(dirname "$0")" || exit; pwd -P)/utilities.sh"
 
 TORRENTS=()
 PORTS=()
-TORRENTS_STRING=''
 
 while getopts ":t:p:" opt; do
   case $opt in
@@ -25,14 +24,13 @@ done
 
 for torrent in "${TORRENTS[@]}"
 do
-  TORRENTS_STRING+="$APP_DIR/torrents/$torrent "
+  for port in "${PORTS[@]}"
+  do
+    if ! transmission-remote localhost:"$port" -t "$APP_DIR/torrents/$torrent" -a > /dev/null 2>&1; then
+      response_error "Could not add torrents"
+    fi
+  done
 done
 
-for port in "${PORTS[@]}"
-do
-  if ! transmission-remote localhost:"$port" -a "$TORRENTS_STRING" > /dev/null 2>&1; then
-    response_error "Could not add torrents"
-  fi
-done
 
 response_ok
