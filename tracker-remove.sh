@@ -1,4 +1,4 @@
-#! /bin/bash
+#! /bin/bash --login
 
 # shellcheck source=utilities.sh
 source "$(cd "$(dirname "$0")" || exit; pwd -P)/utilities.sh"
