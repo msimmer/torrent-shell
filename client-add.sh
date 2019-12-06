@@ -51,7 +51,7 @@ do
 
   # Write the settings files
   sudo mkdir -p "$CLIENT_ROOT/$client_name"
-  echo "$SETTINGS" | sudo tee "$CLIENT_ROOT/$client_name/settings.json" > /dev/null
+  echo "$SETTINGS" | sudo tee "$CLIENT_ROOT/$client_name/.config/settings.json" > /dev/null
 
   # Set permissions
   sudo chown -R "$TRANSMISSION_USER":"$TRANSMISSION_GROUP" "$CLIENT_ROOT/$client_name"
