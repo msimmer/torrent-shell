@@ -7,7 +7,8 @@ source "$(cd "$(dirname "$0")" || exit; pwd -P)/utilities.sh"
 
 RPC_PORTS=()
 TRANSMISSION_PORTS=()
-TRANSMISSION_PORTS_PROTOCOL=()
+TRANSMISSION_PORTS_TCP=()
+TRANSMISSION_PORTS_UDP=()
 SETTINGS=$(< "$CLIENT_SETTINGS_PATH")
 
 while getopts ":p:P:" opt; do
@@ -16,7 +17,8 @@ while getopts ":p:P:" opt; do
     ;;
     P)
       TRANSMISSION_PORTS+=("$OPTARG")
-      TRANSMISSION_PORTS_PROTOCOL+=("$OPTARG/tcp")
+      TRANSMISSION_PORTS_TCP+=("$OPTARG/tcp")
+      TRANSMISSION_PORTS_UDP+=("$OPTARG/udp")
     ;;
     \?) response_error "Invalid option -$OPTARG"
     ;;
@@ -63,7 +65,8 @@ done
 # Add ports to UFW and reload the firewall
 for i in "${!RPC_PORTS[@]}"
 do
-  sudo ufw allow "${RPC_PORTS[i]}","${TRANSMISSION_PORTS_PROTOCOL[i]}"
+  sudo ufw allow "${RPC_PORTS[i]}","${TRANSMISSION_PORTS_TCP[i]}"
+  sudo ufw allow "${RPC_PORTS[i]}","${TRANSMISSION_PORTS_UDP[i]}"
 done
 
 sudo ufw reload
