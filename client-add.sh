@@ -50,7 +50,7 @@ do
   SETTINGS=$(perl -X -pi -e "s/(\"rpc-username\":) [^,]+/\1 \"\"/" <<< "$SETTINGS")
 
   # Write the settings files
-  sudo mkdir -p "$CLIENT_ROOT/$client_name"
+  sudo mkdir -p "$CLIENT_ROOT/$client_name/.config"
   echo "$SETTINGS" | sudo tee "$CLIENT_ROOT/$client_name/.config/settings.json" > /dev/null
 
   # Set permissions
