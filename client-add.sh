@@ -46,8 +46,8 @@ do
   SETTINGS=$(perl -X -pi -e "s/(\"rpc-port\":) [^,]+/\1 $rpc_port/" <<< "$SETTINGS")
   SETTINGS=$(perl -X -pi -e "s/(\"rpc-authentication-required\":) [^,]+/\1 false/" <<< "$SETTINGS")
   SETTINGS=$(perl -X -pi -e "s/(\"rpc-password\":) [^,]+/\1 \"$(date +%s | sha256sum | base64 | head -c 32)\"/" <<< "$SETTINGS")
-  SETTINGS=$(perl -X -pi -e "s/(\"rpc-url\":) [^,]+/\1 \"\/$client_name\/\"/" <<< "$SETTINGS")
-  SETTINGS=$(perl -X -pi -e "s/(\"rpc-username\":) [^,]+/\1 \"$client_name\"/" <<< "$SETTINGS")
+  SETTINGS=$(perl -X -pi -e "s/(\"rpc-url\":) [^,]+/\1 \"\/transmission\/\"/" <<< "$SETTINGS")
+  SETTINGS=$(perl -X -pi -e "s/(\"rpc-username\":) [^,]+/\1 \"\"/" <<< "$SETTINGS")
 
   # Write the settings files
   sudo mkdir -p "$CLIENT_ROOT/$client_name"
